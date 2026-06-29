@@ -3,81 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GitHub PR Tab Group Sync</title>
-  <style>
-    :root { color-scheme: light dark; }
-    body { font: 14px/1.45 system-ui, sans-serif; margin: 0 auto; padding: 24px 28px; max-width: 1040px; min-width: 720px; }
-    h1 { font-size: 18px; margin: 0 0 4px; }
-    p.sub { margin: 0 0 18px; opacity: .75; }
-    fieldset { border: 1px solid rgba(128,128,128,.35); border-radius: 10px; margin: 0 0 16px; padding: 14px 16px; }
-    legend { font-weight: 600; padding: 0 6px; }
-    label { display: block; font-weight: 600; margin: 8px 0 4px; }
-    input, select { font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; }
-    input[type="text"], input[type="password"], input[type="number"] { width: 100%; box-sizing: border-box; }
-    .trow { display: grid; grid-template-columns: minmax(200px,280px) minmax(320px,1fr) 100px 40px; gap: 12px; align-items: center; margin-bottom: 10px; }
-    .trow .tstatus { grid-column: 2 / 4; font-size: 12px; min-height: 14px; }
-    .row { display: grid; grid-template-columns: minmax(240px,1.5fr) minmax(220px,1.5fr) 120px 200px 40px; gap: 12px; align-items: center; margin-bottom: 10px; }
-    .hdr { font-weight: 600; opacity: .7; font-size: 12px; }
-    button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: rgba(128,128,128,.12); cursor: pointer; }
-    button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
-    button.iconbtn { padding: 6px 10px; }
-    button.small { padding: 6px 10px; font-size: 13px; }
-    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    .muted { opacity: .7; }
-    .ok { color: #16a34a; }
-    .err { color: #dc2626; }
-    #status { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 12px; background: rgba(128,128,128,.1); border-radius: 8px; padding: 10px; min-height: 20px; }
-    code { background: rgba(128,128,128,.15); padding: 1px 4px; border-radius: 4px; }
-  </style>
+  <title>PR Tab Group Sync</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>GitHub PR Tab Group Sync</h1>
-  <p class="sub">Map each GitHub repo to a tab group. The group mirrors that repo's open PRs (one tab each); new PRs go to the top, closed/merged ones are removed.</p>
-
-  <fieldset>
-    <legend>GitHub tokens</legend>
-    <p class="muted" style="margin:0 0 10px">Add one or more personal access tokens. A <strong>fine-grained</strong> token is scoped to a single owner/org, so add one token per owner/org you need (e.g. your personal account and each organization). Then pick the matching token on each mapping below. Tokens are stored only in this browser via <code>chrome.storage.local</code>.</p>
-    <div class="trow"><span class="hdr">Label</span><span class="hdr">Token value</span><span class="hdr"></span><span></span></div>
-    <div id="tokenRows"></div>
-    <div class="actions" style="margin-top:4px">
-      <button id="addToken" class="small">+ Add token</button>
+  <div class="shell">
+  <header class="appbar">
+    <span class="gh" id="ghMark" aria-hidden="true"></span>
+    <div>
+      <h1>Pull Request Tab Group Sync</h1>
+      <p class="sub">Tab groups that mirror your open pull requests</p>
     </div>
-    <p class="muted" style="margin:8px 0 0">Create tokens at <code>github.com/settings/tokens</code>. Fine-grained: set <em>Resource owner</em> to the org, grant <em>Pull requests: Read-only</em> (+ <em>Contents: Read</em> for private). Classic: <code>repo</code> scope (and authorize SSO for the org if required).</p>
-  </fieldset>
+  </header>
 
-  <fieldset>
-    <legend>Repo &rarr; Tab Group mappings</legend>
-    <div class="row">
-      <span class="hdr">Repo (owner/name)</span>
-      <span class="hdr">Tab group name</span>
-      <span class="hdr">Color</span>
-      <span class="hdr">Token</span>
-      <span></span>
+  <main class="wrap">
+    <!-- Tokens -->
+    <section class="box">
+      <div class="box-header"><h2>GitHub tokens <span id="tokenCount" class="counter">0</span></h2></div>
+      <div class="box-body">
+        <p class="note">Add a personal access token. A <strong>fine-grained</strong> token is scoped to one owner or organization, so add one per account/org, then pick the matching token on each repository. Tokens stay in this browser (<code>chrome.storage.local</code>) and are only sent to <code>api.github.com</code>.</p>
+        <div id="tokenList"></div>
+        <button id="addToken" class="btn btn-sm"></button>
+      </div>
+    </section>
+
+    <!-- Repositories -->
+    <section class="box">
+      <div class="box-header"><h2>Repositories <span id="mapCount" class="counter">0</span></h2></div>
+      <div class="box-body">
+        <p class="note">Each repository maps to a tab group. New PRs are added to the top; closed or merged PRs are removed. A group is created automatically if it doesn't exist.</p>
+        <div id="mapList"></div>
+        <div class="row-actions">
+          <button id="addRow" class="btn btn-sm"></button>
+          <button id="refreshGroups" class="btn btn-link btn-sm">Refresh groups</button>
+        </div>
+        <datalist id="groupNames"></datalist>
+      </div>
+    </section>
+
+    <!-- Schedule -->
+    <section class="box">
+      <div class="box-header"><h2>Check frequency</h2></div>
+      <div class="box-body">
+        <p class="note">How often to poll GitHub. Minimum 1 minute (Chrome alarms limit); 5 minutes is recommended.</p>
+        <div class="sched">
+          <div class="segmented" id="chips">
+            <button class="seg" data-min="1" type="button">1 min</button>
+            <button class="seg" data-min="5" type="button">5 min</button>
+            <button class="seg" data-min="15" type="button">15 min</button>
+            <button class="seg" data-min="30" type="button">30 min</button>
+          </div>
+          <div class="stepper">
+            <button id="minDown" type="button" aria-label="decrease">&minus;</button>
+            <input id="interval" type="number" min="1" step="1" value="5" />
+            <button id="minUp" type="button" aria-label="increase">+</button>
+          </div>
+          <span class="muted">minutes between checks</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section class="box">
+      <div class="box-header"><h2>Recent activity</h2></div>
+      <div class="box-body">
+        <p class="note" id="lastRunWhen">No runs yet.</p>
+        <div id="log" class="log"><div class="log-empty">Save or run a sync to see results here.</div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="foot-status"><span class="dot"></span><span id="schedStatusText">Idle</span></span>
+    <div class="foot-actions">
+      <button id="syncNow" class="btn"></button>
+      <button id="save" class="btn btn-primary">Save changes</button>
     </div>
-    <div id="rows"></div>
-    <div class="actions" style="margin-top:6px">
-      <button id="addRow" class="small">+ Add mapping</button>
-      <button id="refreshGroups" class="small">Refresh existing groups</button>
-    </div>
-    <datalist id="groupNames"></datalist>
-  </fieldset>
-
-  <fieldset>
-    <legend>Schedule</legend>
-    <label for="interval">Check every (minutes)</label>
-    <input id="interval" type="number" min="1" step="1" value="5" style="width:120px" />
-    <p class="muted" style="margin:6px 0 0">Minimum 1 minute (Chrome alarms limit). 5 is recommended.</p>
-  </fieldset>
-
-  <div class="actions">
-    <button id="save" class="primary">Save</button>
-    <button id="syncNow">Sync now</button>
-    <span id="saveStatus" class="muted"></span>
+  </footer>
   </div>
 
-  <h3 style="margin:18px 0 6px">Last run</h3>
-  <div id="status">No runs yet.</div>
-
+  <div class="toasts" id="toasts"></div>
   <script src="options.js"></script>
 </body>
 </html>
