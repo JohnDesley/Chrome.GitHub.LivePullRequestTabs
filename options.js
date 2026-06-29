@@ -87,9 +87,13 @@ function makeTokenCard(data = {}) {
     else setPill(status, "err", resp?.status ? `Invalid (HTTP ${resp.status})` : "Invalid token");
   });
 
+  const actions = document.createElement("div");
+  actions.className = "token-actions";
+  actions.append(validate, del);
+
   const main = document.createElement("div");
   main.className = "token-main";
-  main.append(avatar, fields, validate, del);
+  main.append(avatar, fields, actions);
   card.append(main, status);
   return card;
 }
@@ -118,11 +122,9 @@ function makeMappingCard(data = {}) {
   const card = document.createElement("div");
   card.className = "mapping";
 
-  const grid = document.createElement("div");
-  grid.className = "map-grid";
-
-  // repo
+  // repo (top row, with delete)
   const fRepo = document.createElement("div");
+  fRepo.className = "repo-field";
   fRepo.innerHTML = `<span class="field-label">Repository</span><div class="input-icon">${ICON.github}<input class="input f-repo" placeholder="owner/name"></div>`;
   fRepo.querySelector(".f-repo").value = data.repo || "";
 
@@ -162,8 +164,15 @@ function makeMappingCard(data = {}) {
   del.type = "button"; del.className = "icon-btn danger f-del"; del.title = "Remove repository"; del.innerHTML = ICON.trash;
   del.addEventListener("click", () => { card.remove(); updateCounts(); });
 
-  grid.append(fRepo, fGroup, fColor, fToken, del);
-  card.append(grid);
+  const top = document.createElement("div");
+  top.className = "map-top";
+  top.append(fRepo, del);
+
+  const rest = document.createElement("div");
+  rest.className = "map-rest";
+  rest.append(fGroup, fColor, fToken);
+
+  card.append(top, rest);
   fillTokenSelect(sel, data.tokenId || "");
   return card;
 }
