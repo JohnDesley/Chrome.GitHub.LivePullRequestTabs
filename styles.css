@@ -53,10 +53,10 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-/* Transparent document so the rounded popup card shows real rounded corners
-   (1Password-style). The macOS popup background is transparent, so the gutter
-   around the card becomes see-through and the corners read as rounded. */
-html { background: transparent; overflow: hidden; }
+/* Bare transparent root. IMPORTANT: do not set overflow/height on <html> — that
+   forces the popup to composite an opaque backing and kills the see-through gutter.
+   Keep the root background transparent so the gutter shows the page (1Password-style). */
+html { background: transparent; }
 body {
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   color: var(--fg); background: transparent;
