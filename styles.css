@@ -59,21 +59,23 @@ body {
   color: var(--fg); background: var(--canvas);
   width: 800px; max-width: 100vw; margin: 0 auto;
   -webkit-font-smoothing: antialiased;
+  /* App-shell: fixed header + footer, only the middle scrolls. No page-level scroll. */
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
 }
 
 /* ---------- app bar (GitHub global-nav style) ---------- */
 .appbar {
-  position: sticky; top: 0; z-index: 20;
+  flex: none;
   background: var(--header-bg); color: var(--header-fg);
-  padding: 12px clamp(12px, 3vw, 16px);
-  display: flex; align-items: center; gap: 11px;
+  padding: 14px clamp(12px, 3vw, 16px);
+  display: flex; align-items: center; gap: 12px;
 }
 .appbar .gh { display: inline-flex; color: var(--header-fg); }
-.appbar .gh svg { width: 28px; height: 28px; }
+.appbar .gh svg { width: 34px; height: 34px; }
 .appbar h1 { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; }
 .appbar .sub { font-size: 12px; color: var(--header-fg-muted); margin: 1px 0 0; }
 
-.wrap { padding: 16px clamp(12px, 3vw, 16px) 20px; }
+.wrap { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 16px clamp(12px, 3vw, 16px) 20px; }
 
 /* ---------- box / sections ---------- */
 .box { border: 1px solid var(--border); border-radius: var(--radius); background: var(--canvas); margin-bottom: 16px; }
@@ -184,7 +186,7 @@ body {
 
 /* ---------- footer ---------- */
 .footer {
-  position: sticky; bottom: 0; z-index: 20;
+  flex: none;
   background: var(--canvas); border-top: 1px solid var(--border);
   padding: 10px clamp(12px, 3vw, 16px);
   display: flex; align-items: center; gap: 12px;

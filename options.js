@@ -297,7 +297,7 @@ async function syncNow() {
 }
 
 /* ---------------- init ---------------- */
-$("ghMark").innerHTML = svg(P.markGithub, 28);
+$("ghMark").innerHTML = svg(P.markGithub, 34);
 $("addToken").innerHTML = svg(P.plus) + "Add token";
 $("addRow").innerHTML = svg(P.plus) + "Add repository";
 $("syncNow").innerHTML = svg(P.sync) + "Sync now";
