@@ -6,7 +6,7 @@
   <title>GitHub PR Tab Group Sync</title>
   <style>
     :root { color-scheme: light dark; }
-    body { font: 14px/1.45 system-ui, sans-serif; margin: 0; padding: 20px; max-width: 820px; }
+    body { font: 14px/1.45 system-ui, sans-serif; margin: 0 auto; padding: 24px 28px; max-width: 1040px; min-width: 720px; }
     h1 { font-size: 18px; margin: 0 0 4px; }
     p.sub { margin: 0 0 18px; opacity: .75; }
     fieldset { border: 1px solid rgba(128,128,128,.35); border-radius: 10px; margin: 0 0 16px; padding: 14px 16px; }
@@ -14,9 +14,9 @@
     label { display: block; font-weight: 600; margin: 8px 0 4px; }
     input, select { font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; }
     input[type="text"], input[type="password"], input[type="number"] { width: 100%; box-sizing: border-box; }
-    .trow { display: grid; grid-template-columns: 200px 1fr 90px 34px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .trow { display: grid; grid-template-columns: minmax(200px,280px) minmax(320px,1fr) 100px 40px; gap: 12px; align-items: center; margin-bottom: 10px; }
     .trow .tstatus { grid-column: 2 / 4; font-size: 12px; min-height: 14px; }
-    .row { display: grid; grid-template-columns: 1.2fr 1.2fr 100px 150px 34px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .row { display: grid; grid-template-columns: minmax(240px,1.5fr) minmax(220px,1.5fr) 120px 200px 40px; gap: 12px; align-items: center; margin-bottom: 10px; }
     .hdr { font-weight: 600; opacity: .7; font-size: 12px; }
     button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: rgba(128,128,128,.12); cursor: pointer; }
     button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
