@@ -61,16 +61,16 @@ body {
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   color: var(--fg); background: transparent;
   /* Popup is capped at 800x600 by Chrome. Fixed px (never vw/vh, which collapse
-     popups to 0). The 8px padding is the transparent gutter for the drop shadow. */
-  width: 800px; height: 600px; padding: 8px; margin: 0; overflow: hidden;
+     popups to 0). No padding/gutter: the card fills the popup edge-to-edge so the
+     only transparent area is the tiny rounded corners (no frame/halo). */
+  width: 800px; height: 600px; margin: 0; padding: 0; overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
-/* The actual rounded card. App-shell: fixed header + footer, only the middle scrolls. */
+/* The rounded card fills the popup. App-shell: fixed header + footer, only the middle scrolls. */
 .shell {
   width: 100%; height: 100%; display: flex; flex-direction: column;
-  background: var(--canvas); border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden;
-  box-shadow: 0 10px 38px rgba(0,0,0,.32);
+  background: var(--canvas);
+  border-radius: 12px; overflow: hidden;
 }
 
 /* ---------- app bar (GitHub global-nav style) ---------- */
