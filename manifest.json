@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitHub PR Tab Group Sync",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Keeps a Chrome tab group per repo mirroring its open pull requests. New PRs are prepended to the top of the group; closed/merged PRs are removed.",
   "permissions": ["tabs", "tabGroups", "storage", "alarms"],
   "host_permissions": ["https://api.github.com/*"],
