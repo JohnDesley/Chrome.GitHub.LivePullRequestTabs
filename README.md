@@ -16,11 +16,41 @@ mirroring that repo's **open pull requests** — one tab per PR.
    Because the API list is authoritative, there are no false wipes; a failed/rate-limited
    call simply skips that cycle and the next run self-heals.
 
-## Getting the code
-This lives in the private repo **`JohnDesley/Chrome.GitHub.LivePullRequestTabs`**. Two ways to get it onto your machine:
+## Getting the code (recommended: clone + pull to update)
+This lives in the private repo **`JohnDesley/Chrome.GitHub.LivePullRequestTabs`**.
 
-- **Download ZIP:** on the repo page click the green **Code** button → **Download ZIP**, then unzip it somewhere permanent (don't load from a temp/Downloads folder you'll clean out — the extension must keep pointing at this folder).
-- **Clone:** `git clone https://github.com/JohnDesley/Chrome.GitHub.LivePullRequestTabs.git`
+**Recommended flow** — clone it into a stable folder so updates are a one-line `git pull`:
+
+```bash
+mkdir -p ~/Documents/ChromeExtensions
+cd ~/Documents/ChromeExtensions
+git clone https://github.com/JohnDesley/Chrome.GitHub.LivePullRequestTabs.git
+```
+
+This creates `~/Documents/ChromeExtensions/Chrome.GitHub.LivePullRequestTabs` as a git working copy. Load **that** folder as the unpacked extension (see below). Keeping it in a permanent location matters — Chrome must keep pointing at the same folder.
+
+> If you bootstrapped the folder by copying files first (no `.git` yet), turn it into a tracked clone once:
+> ```bash
+> cd ~/Documents/ChromeExtensions/Chrome.GitHub.LivePullRequestTabs
+> git init -b main
+> git remote add origin https://github.com/JohnDesley/Chrome.GitHub.LivePullRequestTabs.git
+> git fetch origin
+> git reset --hard origin/main
+> git branch --set-upstream-to=origin/main main
+> ```
+
+### Updating (the recommended flow)
+Whenever the repo changes, update your local copy and reload the extension:
+
+```bash
+cd ~/Documents/ChromeExtensions/Chrome.GitHub.LivePullRequestTabs && git pull
+```
+
+Then open `chrome://extensions` and click the **↻ refresh** icon on the extension's card. Chrome already points at this folder, so no re-load is needed — just the refresh.
+
+**Alternative (no git):** on the repo page click the green **Code** button → **Download ZIP**, unzip somewhere permanent, and load that folder. You'll have to re-download to update.
+
+> Private repo: the first `git clone`/`git pull` may prompt for authentication (terminal git / keychain / a PAT). If `git` errors with `xcrun: invalid active developer path`, install Command Line Tools once with `xcode-select --install` or use Homebrew git.
 
 ## Install (Developer Mode, load unpacked)
 Chrome only allows loading an unpacked extension folder when Developer Mode is on. Step by step:
@@ -33,9 +63,6 @@ Chrome only allows loading an unpacked extension folder when Developer Mode is o
 6. (Optional) Click the **puzzle-piece icon** in the Chrome toolbar and **pin** the extension so you can open its config with one click.
 7. Open the config screen: click the pinned icon, **or** on the extension card click **Details → Extension options**.
 8. Enter your **personal access token**, click **Validate token**, add your repo→group **mappings**, set the interval, and click **Save**.
-
-### Updating after code changes
-If you pull new code (or edit files), go back to `chrome://extensions` and click the **refresh/↻ icon** on the extension card (or the **Update** button) so Chrome reloads it.
 
 ### Notes for Developer Mode
 - Keep the extension folder in a stable location; if you move or delete it, Chrome disables the extension.
