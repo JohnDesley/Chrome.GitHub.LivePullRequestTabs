@@ -2,15 +2,24 @@
 // Pure deterministic poll-and-reconcile. No external services.
 
 const ALARM_NAME = "gh-pr-sync";
-const DEFAULTS = { token: "", intervalMinutes: 5, mappings: [] };
-
 const GH_COLORS = ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cyan", "orange"];
 
 // ---------- storage helpers ----------
+// Config shape:
+// {
+//   tokens: [{ id, label, value }],   // one or more PATs (fine-grained tokens are scoped per owner/org)
+//   intervalMinutes: number,
+//   mappings: [{ repo, groupTitle, color, tokenId }]
+// }
 async function getConfig() {
-  const c = await chrome.storage.local.get(DEFAULTS);
+  const c = await chrome.storage.local.get(["token", "tokens", "intervalMinutes", "mappings"]);
+  let tokens = Array.isArray(c.tokens) ? c.tokens.filter((t) => t && t.value) : [];
+  // Migrate legacy single-token config.
+  if (!tokens.length && c.token) {
+    tokens = [{ id: "legacy", label: "Default", value: c.token }];
+  }
   return {
-    token: c.token || "",
+    tokens,
     intervalMinutes: Math.max(1, Number(c.intervalMinutes) || 5),
     mappings: Array.isArray(c.mappings) ? c.mappings : [],
   };
@@ -71,6 +80,7 @@ async function syncOne(mapping, token) {
   const title = (mapping.groupTitle || "").trim();
   const color = GH_COLORS.includes(mapping.color) ? mapping.color : "grey";
   if (!repo || !title) return { repo, title, error: "incomplete_mapping" };
+  if (!token) return { repo, title, error: "no_token_selected" };
 
   const open = await fetchOpenPRNumbers(repo, token);
   if (open.error) return { repo, title, error: open.error };
@@ -94,7 +104,6 @@ async function syncOne(mapping, token) {
     const url = `https://github.com/${repo}/pull/${n}`;
     try {
       if (!group) {
-        // Group does not exist yet -> create it from the first PR tab.
         const tab = await chrome.tabs.create({ url, active: false });
         const gid = await chrome.tabs.group({ tabIds: [tab.id] });
         await chrome.tabGroups.update(gid, { title, color });
@@ -105,20 +114,19 @@ async function syncOne(mapping, token) {
           url,
           active: false,
           windowId: group.windowId,
-          index: start, // insert at the group's current top
+          index: start,
         });
         await chrome.tabs.group({ tabIds: [tab.id], groupId: group.id });
-        // Grouping can relocate the tab; force it to the group's top.
         const newStart = await groupStartIndex(group.id);
         if (newStart != null) await chrome.tabs.move(tab.id, { index: newStart });
       }
       added.push(n);
     } catch (e) {
-      // Idempotent: a failed add is retried next cycle. Keep going.
+      // Idempotent: retried next cycle.
     }
   }
 
-  // ----- REMOVE PRs that are no longer open (API response is authoritative) -----
+  // ----- REMOVE PRs no longer open (API response is authoritative) -----
   const removed = [];
   const toRemove = [];
   for (const [n, t] of existing) {
@@ -136,13 +144,17 @@ async function syncOne(mapping, token) {
 
 async function syncAll(reason = "alarm") {
   const cfg = await getConfig();
-  if (!cfg.token || !cfg.mappings.length) {
+  if (!cfg.tokens.length || !cfg.mappings.length) {
     await setLastRun([{ error: "not_configured" }]);
     return;
   }
+  const byId = new Map(cfg.tokens.map((t) => [t.id, t.value]));
+  const onlyToken = cfg.tokens.length === 1 ? cfg.tokens[0].value : null;
   const results = [];
   for (const m of cfg.mappings) {
-    results.push(await syncOne(m, cfg.token));
+    // Resolve the token for this mapping; fall back to the sole token if unset.
+    const token = byId.get(m.tokenId) ?? onlyToken ?? null;
+    results.push(await syncOne(m, token));
   }
   await setLastRun(results);
   return results;
@@ -165,11 +177,10 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) syncAll("alarm");
 });
 
-// React to config changes from the options page.
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
   if (changes.intervalMinutes) rescheduleAlarm();
-  if (changes.mappings || changes.token) syncAll("config_change");
+  if (changes.mappings || changes.tokens || changes.token) syncAll("config_change");
 });
 
 // Messages from the options/popup page.

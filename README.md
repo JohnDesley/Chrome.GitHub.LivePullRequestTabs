@@ -70,20 +70,25 @@ Chrome only allows loading an unpacked extension folder when Developer Mode is o
 - No Web Store account or publishing is required.
 
 ## Configure
-- **Personal access token**: create at https://github.com/settings/tokens
-  - Fine-grained: grant **Pull requests: Read-only** (and **Contents: Read** for private repos),
-    scoped to the repos you want.
-  - Classic: `repo` scope covers private repos.
-  - Click **Validate token** to confirm it works.
+- **GitHub tokens**: add one or more personal access tokens (create at https://github.com/settings/tokens). Each token has a **label** and a value, with a **Validate** button.
+  - A **fine-grained** token is scoped to a single **Resource owner** (your account *or* one org), so add **one token per owner/org** you need to track. Grant **Pull requests: Read-only** (+ **Contents: Read** for private repos), scoped to the relevant repos.
+  - A **classic** token uses the `repo` scope for private repos. If the org enforces SAML SSO, open the token, click **Configure SSO**, and **Authorize** it for that org, otherwise org repos return 404.
 - **Mappings**: one row per repo.
   - **Repo**: `owner/name` exactly as in the GitHub URL.
   - **Tab group name**: pick an existing group from the dropdown or type a new name (created if missing).
   - **Color**: any Chrome tab-group color.
+  - **Token**: choose which token to use for this repo (match the token whose owner/org owns the repo). With a single token it's selected automatically.
 - **Schedule**: minutes between checks (min 1; 5 recommended).
 - Click **Save** (saves + syncs immediately) or **Sync now** to run on demand.
 
-The token is stored only in this browser via `chrome.storage.local`. Nothing is sent anywhere
+Tokens are stored only in this browser via `chrome.storage.local`. Nothing is sent anywhere
 except `api.github.com`.
+
+### "repo_not_found_or_no_access" error
+The API returned 404 for that repo with the selected token. Almost always a token-access issue, not a typo:
+- The **token's owner/org doesn't match** the repo — select (or add) the token whose Resource owner owns that repo.
+- A **classic token isn't SSO-authorized** for the org — authorize it (see above).
+- The fine-grained token **wasn't granted that repo** — edit the token's repository access.
 
 ## Notes / limits
 - Handles up to ~1000 open PRs per repo (10 pages × 100). Raise the page cap in `background.js` if needed.

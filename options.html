@@ -6,7 +6,7 @@
   <title>GitHub PR Tab Group Sync</title>
   <style>
     :root { color-scheme: light dark; }
-    body { font: 14px/1.45 system-ui, sans-serif; margin: 0; padding: 20px; max-width: 760px; }
+    body { font: 14px/1.45 system-ui, sans-serif; margin: 0; padding: 20px; max-width: 820px; }
     h1 { font-size: 18px; margin: 0 0 4px; }
     p.sub { margin: 0 0 18px; opacity: .75; }
     fieldset { border: 1px solid rgba(128,128,128,.35); border-radius: 10px; margin: 0 0 16px; padding: 14px 16px; }
@@ -14,46 +14,50 @@
     label { display: block; font-weight: 600; margin: 8px 0 4px; }
     input, select { font: inherit; padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; }
     input[type="text"], input[type="password"], input[type="number"] { width: 100%; box-sizing: border-box; }
-    .row { display: grid; grid-template-columns: 1fr 1fr 110px 34px; gap: 8px; align-items: center; margin-bottom: 8px; }
-    .row .hdr { font-weight: 600; opacity: .7; font-size: 12px; }
+    .trow { display: grid; grid-template-columns: 200px 1fr 90px 34px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .trow .tstatus { grid-column: 2 / 4; font-size: 12px; min-height: 14px; }
+    .row { display: grid; grid-template-columns: 1.2fr 1.2fr 100px 150px 34px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .hdr { font-weight: 600; opacity: .7; font-size: 12px; }
     button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: rgba(128,128,128,.12); cursor: pointer; }
     button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
     button.iconbtn { padding: 6px 10px; }
+    button.small { padding: 6px 10px; font-size: 13px; }
     .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .muted { opacity: .7; }
     .ok { color: #16a34a; }
     .err { color: #dc2626; }
     #status { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 12px; background: rgba(128,128,128,.1); border-radius: 8px; padding: 10px; min-height: 20px; }
-    a { color: #2563eb; }
+    code { background: rgba(128,128,128,.15); padding: 1px 4px; border-radius: 4px; }
   </style>
 </head>
 <body>
   <h1>GitHub PR Tab Group Sync</h1>
-  <p class="sub">Each row maps a GitHub repo to a tab group. The group mirrors that repo's open PRs (one tab each); new PRs are added to the top, closed/merged ones are removed.</p>
+  <p class="sub">Map each GitHub repo to a tab group. The group mirrors that repo's open PRs (one tab each); new PRs go to the top, closed/merged ones are removed.</p>
 
   <fieldset>
-    <legend>GitHub access</legend>
-    <label for="token">Personal access token</label>
-    <input id="token" type="password" placeholder="github_pat_… or ghp_…" autocomplete="off" />
-    <p class="muted" style="margin:6px 0 0">Needs read access to the repos' pull requests. Fine-grained token: <em>Pull requests: Read-only</em> (+ <em>Contents: Read</em> for private repos). Classic token: <code>repo</code> scope for private repos. Stored locally in this browser only.</p>
-    <div class="actions" style="margin-top:10px">
-      <button id="validate">Validate token</button>
-      <span id="tokenStatus" class="muted"></span>
+    <legend>GitHub tokens</legend>
+    <p class="muted" style="margin:0 0 10px">Add one or more personal access tokens. A <strong>fine-grained</strong> token is scoped to a single owner/org, so add one token per owner/org you need (e.g. your personal account and each organization). Then pick the matching token on each mapping below. Tokens are stored only in this browser via <code>chrome.storage.local</code>.</p>
+    <div class="trow"><span class="hdr">Label</span><span class="hdr">Token value</span><span class="hdr"></span><span></span></div>
+    <div id="tokenRows"></div>
+    <div class="actions" style="margin-top:4px">
+      <button id="addToken" class="small">+ Add token</button>
     </div>
+    <p class="muted" style="margin:8px 0 0">Create tokens at <code>github.com/settings/tokens</code>. Fine-grained: set <em>Resource owner</em> to the org, grant <em>Pull requests: Read-only</em> (+ <em>Contents: Read</em> for private). Classic: <code>repo</code> scope (and authorize SSO for the org if required).</p>
   </fieldset>
 
   <fieldset>
-    <legend>Repo → Tab Group mappings</legend>
+    <legend>Repo &rarr; Tab Group mappings</legend>
     <div class="row">
       <span class="hdr">Repo (owner/name)</span>
       <span class="hdr">Tab group name</span>
       <span class="hdr">Color</span>
+      <span class="hdr">Token</span>
       <span></span>
     </div>
     <div id="rows"></div>
     <div class="actions" style="margin-top:6px">
-      <button id="addRow">+ Add mapping</button>
-      <button id="refreshGroups">Refresh existing groups</button>
+      <button id="addRow" class="small">+ Add mapping</button>
+      <button id="refreshGroups" class="small">Refresh existing groups</button>
     </div>
     <datalist id="groupNames"></datalist>
   </fieldset>
