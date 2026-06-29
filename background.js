@@ -177,11 +177,6 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_NAME) syncAll("alarm");
 });
 
-// Clicking the toolbar icon opens the full-width options page (no cramped popup).
-chrome.action.onClicked.addListener(() => {
-  chrome.runtime.openOptionsPage();
-});
-
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
   if (changes.intervalMinutes) rescheduleAlarm();
