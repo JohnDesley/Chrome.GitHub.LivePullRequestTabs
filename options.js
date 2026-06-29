@@ -4,22 +4,20 @@ const COLORS = ["grey", "blue", "red", "yellow", "green", "pink", "purple", "cya
 const $ = (id) => document.getElementById(id);
 const hasChrome = typeof chrome !== "undefined" && chrome.storage && chrome.runtime;
 
-const ICON = {
-  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>',
-  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
-  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5.5 20 2 13 2 13a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M1 1l22 22"></path></svg>',
-  github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.7.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5 18 5.3 18 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"></path></svg>',
+// Octicons (viewBox 0 0 16 16)
+const P = {
+  markGithub: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.075-.55-.17-.55-.378 0-.196.008-.853.008-1.67 0-.568-.192-.936-.41-1.124 1.345-.15 2.76-.66 2.76-2.985 0-.66-.235-1.2-.62-1.62.063-.15.27-.77-.06-1.605 0 0-.508-.16-1.658.62-.48-.135-1-.203-1.518-.203-.516 0-1.036.068-1.518.203-1.15-.78-1.66-.62-1.66-.62-.33.835-.123 1.455-.06 1.605-.385.42-.62.96-.62 1.62 0 2.32 1.41 2.84 2.75 2.99-.172.15-.33.42-.385.81-.348.155-1.226.535-1.766-.64 0 0-.32-.582-.926-.625 0 0-.59-.008-.04.37 0 0 .396.185.67.88 0 0 .354 1.075 2.03.71 0 .47.005 1.04.005 1.295 0 .206-.15.453-.55.378A8.013 8.013 0 0 1 0 8c0-4.42 3.58-8 8-8Z",
+  key: "M10.5 0a5.499 5.499 0 1 1-1.288 10.848l-.932.932a.749.749 0 0 1-.53.22H7v.75a.749.749 0 0 1-.22.53l-.5.5a.749.749 0 0 1-.53.22H5v.75a.749.749 0 0 1-.22.53l-.5.5a.749.749 0 0 1-.53.22h-2A1.75 1.75 0 0 1 0 14.25v-2c0-.199.079-.389.22-.53l4.932-4.932A5.5 5.5 0 0 1 10.5 0Zm0 1.5a3.999 3.999 0 0 0-3.834 5.166.75.75 0 0 1-.198.744L1.5 12.378v1.872c0 .138.112.25.25.25h1.872l.5-.5V12.75a.75.75 0 0 1 .75-.75h1.25v-1.25a.75.75 0 0 1 .75-.75h1.378l.744-.744a.75.75 0 0 1 .744-.198A4 4 0 1 0 10.5 1.5Zm1 2.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z",
+  sync: "M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .655-.835ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z",
+  plus: "M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z",
+  trash: "M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.748 1.748 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z",
+  eye: "M8 2c1.981 0 3.671.992 4.933 2.078 1.27 1.091 2.187 2.345 2.637 3.023a1.62 1.62 0 0 1 0 1.798c-.45.678-1.367 1.932-2.637 3.023C11.67 13.008 9.981 14 8 14c-1.981 0-3.671-.992-4.933-2.078C1.797 10.83.88 9.576.43 8.898a1.62 1.62 0 0 1 0-1.798c.45-.677 1.367-1.931 2.637-3.022C4.33 2.992 6.019 2 8 2ZM1.679 7.932a.12.12 0 0 0 0 .136c.411.622 1.241 1.75 2.366 2.717C5.176 11.758 6.527 12.5 8 12.5c1.473 0 2.825-.742 3.955-1.715 1.124-.967 1.954-2.096 2.366-2.717a.12.12 0 0 0 0-.136c-.412-.621-1.242-1.75-2.366-2.717C10.824 4.242 9.473 3.5 8 3.5c-1.473 0-2.824.742-3.955 1.715-1.124.967-1.954 2.096-2.366 2.717ZM8 10a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 10Z",
+  checkFill: "M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm3.78-9.72-4.5 4.5a.75.75 0 0 1-1.06 0l-2-2a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l1.47 1.47 3.97-3.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z",
+  xFill: "M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z",
 };
+const svg = (path, w = 16) => `<svg viewBox="0 0 16 16" width="${w}" height="${w}" fill="currentColor" aria-hidden="true"><path d="${path}"></path></svg>`;
 
 function uid() { return (crypto?.randomUUID?.() || ("t" + Date.now() + Math.random().toString(36).slice(2))); }
-function initials(label) {
-  const s = (label || "").trim();
-  if (!s) return "GH";
-  const parts = s.split(/[\s_\-/().]+/).map((p) => p.replace(/[^a-z0-9]/gi, "")).filter(Boolean);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return "GH";
-}
 async function sendMsg(payload) { if (!hasChrome) return null; return chrome.runtime.sendMessage(payload).catch(() => null); }
 
 function toast(msg, type = "info") {
@@ -39,7 +37,7 @@ function makeTokenCard(data = {}) {
 
   const avatar = document.createElement("div");
   avatar.className = "avatar";
-  avatar.textContent = initials(data.label);
+  avatar.innerHTML = svg(P.key);
 
   const fields = document.createElement("div");
   fields.className = "fields";
@@ -48,7 +46,6 @@ function makeTokenCard(data = {}) {
   label.className = "input t-label";
   label.placeholder = "Label (e.g. GamebasicsBV)";
   label.value = data.label || "";
-  label.addEventListener("input", () => { avatar.textContent = initials(label.value); populateMappingSelects(); });
 
   const secret = document.createElement("div");
   secret.className = "secret";
@@ -59,20 +56,16 @@ function makeTokenCard(data = {}) {
   value.autocomplete = "off";
   value.value = data.value || "";
   const eye = document.createElement("button");
-  eye.type = "button"; eye.className = "icon-btn eye"; eye.title = "Show / hide"; eye.innerHTML = ICON.eye;
-  eye.addEventListener("click", () => {
-    const show = value.type === "password";
-    value.type = show ? "text" : "password";
-    eye.innerHTML = show ? ICON.eyeOff : ICON.eye;
-  });
+  eye.type = "button"; eye.className = "icon-btn eye"; eye.title = "Show / hide"; eye.innerHTML = svg(P.eye);
+  eye.addEventListener("click", () => { value.type = value.type === "password" ? "text" : "password"; });
   secret.append(value, eye);
   fields.append(label, secret);
 
   const validate = document.createElement("button");
-  validate.type = "button"; validate.className = "btn btn-ghost btn-sm t-validate"; validate.textContent = "Validate";
+  validate.type = "button"; validate.className = "btn btn-sm t-validate"; validate.textContent = "Validate";
 
   const del = document.createElement("button");
-  del.type = "button"; del.className = "icon-btn danger t-del"; del.title = "Remove token"; del.innerHTML = ICON.trash;
+  del.type = "button"; del.className = "icon-btn danger t-del"; del.title = "Remove token"; del.innerHTML = svg(P.trash);
   del.addEventListener("click", () => { card.remove(); updateCounts(); populateMappingSelects(); });
 
   const status = document.createElement("span");
@@ -99,7 +92,8 @@ function makeTokenCard(data = {}) {
 }
 function setPill(el, type, text) {
   el.className = "pill t-status" + (type ? " " + type : "");
-  el.innerHTML = `<span class="pdot"></span>`;
+  const icon = type === "ok" ? svg(P.checkFill, 14) : type === "err" ? svg(P.xFill, 14) : "";
+  el.innerHTML = icon;
   el.appendChild(document.createTextNode(text));
   el.classList.remove("hidden");
 }
@@ -122,18 +116,15 @@ function makeMappingCard(data = {}) {
   const card = document.createElement("div");
   card.className = "mapping";
 
-  // repo (top row, with delete)
   const fRepo = document.createElement("div");
   fRepo.className = "repo-field";
-  fRepo.innerHTML = `<span class="field-label">Repository</span><div class="input-icon">${ICON.github}<input class="input f-repo" placeholder="owner/name"></div>`;
+  fRepo.innerHTML = `<span class="field-label">Repository</span><div class="input-icon">${svg(P.markGithub)}<input class="input f-repo" placeholder="owner/name"></div>`;
   fRepo.querySelector(".f-repo").value = data.repo || "";
 
-  // group
   const fGroup = document.createElement("div");
   fGroup.innerHTML = `<span class="field-label">Tab group</span><input class="input f-group" list="groupNames" placeholder="Group name">`;
   fGroup.querySelector(".f-group").value = data.groupTitle || "";
 
-  // color
   const fColor = document.createElement("div");
   fColor.innerHTML = `<span class="field-label">Color</span>`;
   const swatches = document.createElement("div");
@@ -152,7 +143,6 @@ function makeMappingCard(data = {}) {
   }
   fColor.appendChild(swatches);
 
-  // token
   const fToken = document.createElement("div");
   fToken.innerHTML = `<span class="field-label">Token</span>`;
   const sel = document.createElement("select");
@@ -161,7 +151,7 @@ function makeMappingCard(data = {}) {
   fToken.appendChild(sel);
 
   const del = document.createElement("button");
-  del.type = "button"; del.className = "icon-btn danger f-del"; del.title = "Remove repository"; del.innerHTML = ICON.trash;
+  del.type = "button"; del.className = "icon-btn danger f-del"; del.title = "Remove repository"; del.innerHTML = svg(P.trash);
   del.addEventListener("click", () => { card.remove(); updateCounts(); });
 
   const top = document.createElement("div");
@@ -193,9 +183,7 @@ function fillTokenSelect(sel, desiredId) {
   sel.value = tokens.some((t) => t.id === prev) ? prev : tokens[0].id;
   sel.dataset.selected = sel.value;
 }
-function populateMappingSelects() {
-  [...$("mapList").querySelectorAll(".f-token")].forEach((s) => fillTokenSelect(s));
-}
+function populateMappingSelects() { [...$("mapList").querySelectorAll(".f-token")].forEach((s) => fillTokenSelect(s)); }
 function readMappings() {
   return [...$("mapList").querySelectorAll(".mapping")].map((c) => ({
     repo: c.querySelector(".f-repo").value.trim(),
@@ -219,8 +207,8 @@ function setInterval_(min) {
 }
 function updateSchedStatus(lastRun) {
   const v = Math.max(1, Number($("interval").value) || 5);
-  let txt = `Every ${v} min`;
-  if (lastRun?.at) txt += ` · synced ${relTime(lastRun.at)}`;
+  let txt = `Checks every ${v} min`;
+  if (lastRun?.at) txt += ` · last sync ${relTime(lastRun.at)}`;
   $("schedStatusText").textContent = txt;
 }
 function relTime(ts) {
@@ -238,22 +226,19 @@ function renderLastRun(lastRun) {
   $("lastRunWhen").textContent = `Last run ${relTime(lastRun.at)} · ${new Date(lastRun.at).toLocaleString()}`;
   log.innerHTML = "";
   for (const r of lastRun.results) {
+    const isErr = !!r.error;
     const row = document.createElement("div");
     row.className = "log-row";
-    const isErr = !!r.error;
     const badges = [];
     if (isErr) badges.push(`<span class="tag rem">${r.error}</span>`);
     else {
       badges.push(`<span class="tag open">${r.openCount} open</span>`);
       if (r.added?.length) badges.push(`<span class="tag add">+${r.added.length}</span>`);
-      if (r.removed?.length) badges.push(`<span class="tag rem">−${r.removed.length}</span>`);
+      if (r.removed?.length) badges.push(`<span class="tag rem">&minus;${r.removed.length}</span>`);
     }
     row.innerHTML = `
-      <span class="log-dot ${isErr ? "err" : "ok"}"></span>
-      <div class="log-main">
-        <div class="log-title"></div>
-        <div class="log-sub"></div>
-      </div>
+      <span class="log-ic ${isErr ? "err" : "ok"}">${svg(isErr ? P.xFill : P.checkFill)}</span>
+      <div class="log-main"><div class="log-title"></div><div class="log-sub"></div></div>
       <div class="log-badges">${badges.join("")}</div>`;
     row.querySelector(".log-title").textContent = r.repo || "(unconfigured)";
     row.querySelector(".log-sub").textContent = r.title ? `→ ${r.title}` : "";
@@ -261,7 +246,6 @@ function renderLastRun(lastRun) {
   }
 }
 
-/* ---------------- groups datalist ---------------- */
 async function refreshGroups() {
   const resp = await sendMsg({ type: "listGroups" });
   const dl = $("groupNames");
@@ -312,7 +296,12 @@ async function syncNow() {
   refreshGroups();
 }
 
-/* ---------------- wire up ---------------- */
+/* ---------------- init ---------------- */
+$("ghMark").innerHTML = svg(P.markGithub, 28);
+$("addToken").innerHTML = svg(P.plus) + "Add token";
+$("addRow").innerHTML = svg(P.plus) + "Add repository";
+$("syncNow").innerHTML = svg(P.sync) + "Sync now";
+
 $("addToken").addEventListener("click", () => { $("tokenList").appendChild(makeTokenCard({ id: uid() })); updateCounts(); populateMappingSelects(); });
 $("addRow").addEventListener("click", () => { $("mapList").appendChild(makeMappingCard({ color: "blue" })); updateCounts(); });
 $("refreshGroups").addEventListener("click", () => { refreshGroups(); toast("Groups refreshed", "info"); });
