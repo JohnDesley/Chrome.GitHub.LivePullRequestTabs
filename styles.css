@@ -53,13 +53,14 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-/* Bare transparent root. IMPORTANT: do not set overflow/height on <html> — that
-   forces the popup to composite an opaque backing and kills the see-through gutter.
-   Keep the root background transparent so the gutter shows the page (1Password-style). */
-html { background: transparent; }
+/* Popup transparency trick: Chrome treats `background: transparent` as OPAQUE WHITE
+   for popups. Using a near-zero-alpha color instead flips the popup into
+   alpha-compositing mode, so the gutter actually shows the page through (1Password-style).
+   Do not set overflow/height on <html> either (that also forces an opaque backing). */
+html, body { background-color: rgba(0,0,0,0.01); }
 body {
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-  color: var(--fg); background: transparent;
+  color: var(--fg);
   /* Popup is capped at 800x600 by Chrome. Fixed px (never vw/vh, which collapse
      popups to 0). The 14px padding is the transparent gutter the soft drop shadow
      fades into, so the card reads as a floating rounded card (1Password-style). */
