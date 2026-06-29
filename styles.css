@@ -52,8 +52,9 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; overflow-x: hidden; }
-html { background: var(--canvas); }
+html, body { margin: 0; }
+/* Lock the document so ONLY the middle (.wrap) scrolls — no outer/extra scrollbars. */
+html { background: var(--canvas); height: 600px; overflow: hidden; }
 body {
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   color: var(--fg); background: var(--canvas);
@@ -74,8 +75,8 @@ body {
   padding: 14px clamp(12px, 3vw, 16px);
   display: flex; align-items: center; gap: 12px;
 }
-.appbar .gh { display: inline-flex; color: var(--header-fg); }
-.appbar .gh svg { width: 34px; height: 34px; }
+.appbar .gh { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #1f2328; display: grid; place-items: center; flex: none; }
+.appbar .gh svg { width: 20px; height: 20px; }
 .appbar h1 { font-size: 14px; font-weight: 600; margin: 0; line-height: 1.2; }
 .appbar .sub { font-size: 12px; color: var(--header-fg-muted); margin: 1px 0 0; }
 
@@ -148,7 +149,7 @@ body {
 .map-top { display: flex; gap: 10px; align-items: flex-end; }
 .map-top .repo-field { flex: 1; min-width: 0; }
 .map-rest { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 12px; align-items: end; }
-.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatches { display: flex; gap: 6px; flex-wrap: nowrap; }
 .swatch { width: 22px; height: 22px; border-radius: var(--radius); border: 1px solid rgba(31,35,40,.12); cursor: pointer; padding: 0; flex: none; }
 .swatch:hover { transform: scale(1.1); }
 .swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--accent-emphasis); }
@@ -201,7 +202,7 @@ body {
 .foot-actions { display: flex; gap: 8px; flex: none; }
 
 /* ---------- toast ---------- */
-.toasts { position: fixed; left: 50%; bottom: 64px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 60; max-width: 92vw; }
+.toasts { position: fixed; right: clamp(12px, 3vw, 16px); bottom: 62px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 60; max-width: 80%; }
 .toast { display: flex; align-items: center; gap: 9px; background: var(--canvas); color: var(--fg); border: 1px solid var(--border); box-shadow: var(--shadow-md); padding: 9px 14px; border-radius: var(--radius); font-size: 13px; animation: pop .2s ease; }
 .toast .tdot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
 .toast.ok .tdot { background: var(--success-fg); } .toast.err .tdot { background: var(--danger-fg); } .toast.info .tdot { background: var(--accent-fg); }
