@@ -57,7 +57,9 @@ html { background: var(--canvas); }
 body {
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   color: var(--fg); background: var(--canvas);
-  width: 800px; max-width: 100vw; margin: 0 auto;
+  /* Fixed px width drives the popup size. Do NOT use vw/100vw here: in a popup
+     the viewport units resolve to ~0 and collapse the popup to a sliver. */
+  width: 800px; margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   /* App-shell: fixed header + footer, only the middle scrolls.
      Explicit height (NOT 100vh) so the popup doesn't collapse: a popup has no
