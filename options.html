@@ -23,7 +23,10 @@
       <div class="box-body">
         <p class="note">Add a personal access token. A <strong>fine-grained</strong> token is scoped to one owner or organization, so add one per account/org, then pick the matching token on each repository. Tokens stay in this browser (<code>chrome.storage.local</code>) and are only sent to <code>api.github.com</code>.</p>
         <div id="tokenList"></div>
-        <button id="addToken" class="btn btn-sm"></button>
+        <div class="row-actions">
+          <button id="addToken" class="btn btn-sm"></button>
+          <a id="createPat" class="btn btn-link btn-sm" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer"></a>
+        </div>
       </div>
     </section>
 

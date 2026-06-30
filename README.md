@@ -17,7 +17,7 @@ mirroring that repo's **open pull requests** — one tab per PR.
    call simply skips that cycle and the next run self-heals.
 
 ## Getting the code (recommended: clone + pull to update)
-This lives in the private repo **`JohnDesley/Chrome.GitHub.LivePullRequestTabs`**.
+This lives at **`JohnDesley/Chrome.GitHub.LivePullRequestTabs`** on GitHub.
 
 **Recommended flow** — clone it into a stable folder so updates are a one-line `git pull`:
 
@@ -28,16 +28,6 @@ git clone https://github.com/JohnDesley/Chrome.GitHub.LivePullRequestTabs.git
 ```
 
 This creates `~/Documents/ChromeExtensions/Chrome.GitHub.LivePullRequestTabs` as a git working copy. Load **that** folder as the unpacked extension (see below). Keeping it in a permanent location matters — Chrome must keep pointing at the same folder.
-
-> If you bootstrapped the folder by copying files first (no `.git` yet), turn it into a tracked clone once:
-> ```bash
-> cd ~/Documents/ChromeExtensions/Chrome.GitHub.LivePullRequestTabs
-> git init -b main
-> git remote add origin https://github.com/JohnDesley/Chrome.GitHub.LivePullRequestTabs.git
-> git fetch origin
-> git reset --hard origin/main
-> git branch --set-upstream-to=origin/main main
-> ```
 
 ### Updating (the recommended flow)
 Whenever the repo changes, update your local copy and reload the extension:
@@ -50,7 +40,7 @@ Then open `chrome://extensions` and click the **↻ refresh** icon on the extens
 
 **Alternative (no git):** on the repo page click the green **Code** button → **Download ZIP**, unzip somewhere permanent, and load that folder. You'll have to re-download to update.
 
-> Private repo: the first `git clone`/`git pull` may prompt for authentication (terminal git / keychain / a PAT). If `git` errors with `xcrun: invalid active developer path`, install Command Line Tools once with `xcode-select --install` or use Homebrew git.
+> If the repository is private, the first `git clone`/`git pull` may prompt for authentication. On macOS, if `git` errors with `xcrun: invalid active developer path`, run `xcode-select --install` once or use Homebrew git.
 
 ## Install (Developer Mode, load unpacked)
 Chrome only allows loading an unpacked extension folder when Developer Mode is on. Step by step:
